@@ -1,6 +1,8 @@
 const mysql = require('mysql2');
 const express = require('express');
 
+const inputCheck = require('./utils/inputCheck');
+
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -12,7 +14,7 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
-        password: 'Matrix2016!',
+        password: 'new-password',
         database: 'mycompany',
     },
     console.log('Connected to the mycompany database')
@@ -55,6 +57,34 @@ app.delete('/api/employee/:id', (req, res) => {
             });
         }
     });
+});
+
+app.post('/api/employee', ({body}, res) => {
+
+    const errors = inputCheck(body, 'first_name', 'last_name', 'department', 'job_title');
+
+    if (errors) {
+        res.status(400).json({ error: errors });
+        return;
+    }
+
+    const sql = `INSERT INTO employee (first_name, last_name, deaprtment, job_title)
+    
+                VALUES (?,?,?,?)`;
+    const params = [body.first_name, body.last_name, body.department, body.job_title];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.status(400).json({ error: err.message});
+            return;
+        }
+
+        res.json({
+            message: 'success',
+            data: body
+        });
+    });
+
 });
  
 
