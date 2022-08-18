@@ -18,33 +18,45 @@ const db = mysql.createConnection(
     console.log('Connected to the mycompany database')
 );
 
-// db.query(`DELETE FROM employee WHERE id = ?`, 1, (err, result) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(result);
-// });
-const sql = `INSERT INTO employee (id, first_name, last_name, department, job_title)
-                 VALUES (?,?,?,?,?)`;
-const params = [1, 'Bruce', 'Wayne', 'R&D', 'Entry'];
 
-db.query(sql, params, (err, result) => {
-     if (err){
-         console.log(err);
-     }
-     console.log(result);
+ app.get('/api/employee/:id', (req, res) => {
+    const sql = `SELECT * FROM employee WHERE id=?`;
+    const params = [req.params.id];
+
+    db.query(sql, params, (err, row) => {
+        if (err) {
+            res.status(400).json({ error: err.message });
+            return;
+        }
+        res.json({
+            message: 'success',
+            data: row
+        });
+    });
  });
-// app.get('/', (req, res) => {
-//     res.json({
-//         message: "~Server is running~"
-//     });
-// });
-// db.query(`SELECT * FROM employee WHERE id=1`, (err, row) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(row);
-// });
+
+ 
+app.delete('/api/employee/:id', (req, res) => {
+    const sql = `DELETE FROM employee WHERE id = ?`;
+    const params = [req.params.id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) {
+            res.statusMessage(400).json({ error: res.message});
+        } else if (!result.affectedRows) {
+            res.json({
+                message: 'employee not found'
+            });
+        } else {
+            res.json({
+                message: 'deleted',
+                changes: result.affectedRows,
+                id: req.params.id
+            });
+        }
+    });
+});
+ 
 
 app.use((req, res) => {
     res.status(404).end();
