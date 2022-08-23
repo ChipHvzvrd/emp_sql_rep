@@ -1,7 +1,10 @@
-CREATE TABLE seniority (
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS location;
+
+CREATE TABLE location (
 id INTEGER AUTO_INCREMENT PRIMARY KEY,
-years VARCHAR(2) NOT NULL,
-history TEXT
+building INTEGER(4),
+region VARCHAR(2)
 );
 
 CREATE TABLE employee (
@@ -9,5 +12,7 @@ id INTEGER AUTO_INCREMENT PRIMARY KEY,
 first_name VARCHAR(30) NOT NULL,
 last_name VARCHAR(30) NOT NULL,
 department VARCHAR(30) NOT NULL,
-job_title VARCHAR (30) NOT NULL
+job_title VARCHAR (30) NOT NULL,
+loc_id INTEGER,
+CONSTRAINT fk_loc FOREIGN KEY (loc_id) REFERENCES location(id) ON DELETE SET NULL
 );
