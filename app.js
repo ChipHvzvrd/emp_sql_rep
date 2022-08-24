@@ -1,11 +1,25 @@
 //const fs = require('fs');
 const mysql = require('mysql2');
+
 const inquirer = require('inquirer');
 
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'new-password',
+        database: 'mycompany',
+    },
+    console.log('Connected to the mycompany database')
+);
 
-const promptDatabase = addData => {
-
-}
+function sqlquery() {
+    db.query("SELECT FROM  employee", function(error) {
+        if (error) throw error;
+        console.log("results", results);
+        connection.end()
+    })
+};
 
 const promptUser = async () => {
     return inquirer.prompt([
@@ -40,12 +54,22 @@ const promptUser = async () => {
         },
     ]);
 };
+promptUser().then(answers => {
+    console.log(answers);
+    db.query("INSERT INTO employee SET ?", {
+        first_name: answers.first_name,
+        last_name: answers.last_name,
+        department: answers.department,
+        job_title: answers.job_title
+    }, function(error){
+        if (error) throw error;
+        console.log("Success: added employee to database");
+        });
+    });
 
-var sqldata = "INSERT INTO employee (first_name, last_name, department, job_title, loc_id)";
-
- promptUser().then(answers => {
-     mysql.query(sqldata, [answers], function(err, result) {
-        if (err) throw err;
-        console.log("Number of records inserted: " + result.affectedRows);
-     });
- });
+//  promptUser().then(answers => {
+//      mysql.query(sqldata, [answers], function(err, result) {
+//         if (err) throw err;
+//         console.log("Number of records inserted: " + result.affectedRows);
+//      });
+//  });
