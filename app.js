@@ -7,7 +7,7 @@ const db = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
-        password: 'new-password',
+        password: 'Matrix2016!',
         database: 'mycompany',
     },
     console.log('Connected to the mycompany database')
@@ -143,6 +143,48 @@ const promptUser = async () => {
             name: 'add_dep',
             message: 'What is the name of the department you would like to add?',
             when: (answers) => answers.selection === 'add department'
+        },
+        {
+            type: 'input',
+            name: 'add_job',
+            message: 'What is the title of the job you would like to add?',
+            when: (answers) => answers.selection === 'add job'
+        },
+        {
+            type: 'list',
+            name: 'add_job_dep',
+            message: 'What department will this role involve?',
+            choices: [
+                {
+                    name: 'R&D',
+                    value: 1,
+                },
+                {
+                    name: 'Aeronautics',
+                    value: 2,
+                },
+                {
+                    name: 'Security',
+                    value: 3,
+                },
+                {
+                    name: 'Medical',
+                    value: 4,
+                }
+            ],
+            when: (answers) => answers.selection === 'add job'
+        },
+        {
+            type: 'number',
+            name: 'add_job_sal',
+            message: 'What is the compensation for this position?',
+            when: (answers) => answers.selection === 'add job'
+        },
+        {
+            type: 'list',
+            name: 'add_job_sal',
+            message: 'What is the compensation for this position?',
+            when: (answers) => answers.selection === 'add job'
         }
     ]);
 };
@@ -185,6 +227,13 @@ promptUser().then(answers => {
             if (err) throw err;
             console.log(result);
             process.exit();
+        })
+    }
+    else if (answers.selection === 'add job') {
+        db.query('INSERT INTO jobs SET ?', {
+            job_title : answers.add_job,
+            dep_id_job: answers.add_job_dep,
+            salary: answers.add_job_sal,  
         })
     }
 });
